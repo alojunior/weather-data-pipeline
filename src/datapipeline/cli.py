@@ -18,14 +18,13 @@ def run(
     debug: bool = typer.Option(False, "--debug", help="Enable debug mode"),
     verbose: bool = typer.Option(False, "--verbose", help="Enable verbose output"),
     output_format: Literal["csv", "json", "postgres"] = typer.Option("csv", "--output-format", help="Output format: csv, json, or postgres"),
-    batch_size: int = typer.Option(32, "--batch-size", help="Batch size for processing")
+    #batch_size: int = typer.Option(32, "--batch-size", help="Batch size for processing")
 ):
     
     config = PipelineConfig(
         debug=debug,
         verbose=verbose,
-        output_format=output_format,
-        batch_size=batch_size
+        output_format=output_format
     )
     
     source = OpenMeteoSource(
@@ -36,8 +35,25 @@ def run(
         verbose=config.verbose
     )
     
-    data = source.extract()
-    print(f"[blue]Extracted Data:[/blue]\n{data.head()}")
+    transformer = [BasicTransform(
+        debug=config.debug,
+        verbose=config.verbose
+    )]
     
+    csv_sink = CSVSink(
+        debug=config.debug,
+        verbose=config.verbose,
+        filename="weather_data.csv"
+    )
+    
+    pipeline = DataPipeline(
+        source=source,
+        transformers=transformer,
+        sink=csv_sink,
+    )
+    
+    pipeline.run()
+    
+
 if __name__ == "__main__":
     app()

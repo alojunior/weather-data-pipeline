@@ -7,7 +7,7 @@ class PipelineConfig:
     debug: bool = False
     verbose: bool = False
     output_format: Literal["csv", "json", "postgres"] = "csv"  # opções podem ser 'csv', 'json', 'postgres'
-    batch_size: int = 32 # Irmão adicionei isso como exemplo de nova configuração porém não entendo muito bem o que faz
+    #batch_size: int = 32 # Irmão adicionei isso como exemplo de nova configuração porém não vai ser usado agora
     
     
     def __post_init__(self):
@@ -17,4 +17,4 @@ class PipelineConfig:
     
     def __str__(self):
         return (f"PipelineConfig(debug={self.debug}, verbose={self.verbose}, "
-                f"output_format='{self.output_format}', batch_size={self.batch_size})")
+                f"output_format='{self.output_format}'")
