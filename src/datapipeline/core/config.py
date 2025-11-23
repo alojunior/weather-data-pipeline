@@ -14,3 +14,7 @@ class PipelineConfig:
         valid_formats = ('csv', 'postgres', 'json')
         if self.output_format not in valid_formats:
             raise ValueError(f"output_format must be one of: {valid_formats}")
+    
+    def __str__(self):
+        return (f"PipelineConfig(debug={self.debug}, verbose={self.verbose}, "
+                f"output_format='{self.output_format}', batch_size={self.batch_size})")
