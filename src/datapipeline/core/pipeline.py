@@ -10,6 +10,9 @@ class DataPipeline:
     def run(self) -> None:
         # Extract data from the source
         data = self.source.extract()
-        processed = self.transformers.transform(data)
-        self.sink.load(processed)
+        
+        for transformer in self.transformers:
+            data = transformer.transform(data)
+          
+        self.sink.load(data)
 
