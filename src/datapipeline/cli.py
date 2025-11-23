@@ -28,13 +28,16 @@ def run(
         batch_size=batch_size
     )
     
-    print(f"[yellow]Pipeline Configuration:[/yellow] {config}")
+    source = OpenMeteoSource(
+        latitude=23.0,
+        longitude=49.0,
+        hourly="temperature_2m,relativehumidity_2m",
+        debug=config.debug,
+        verbose=config.verbose
+    )
     
-    print("[blue]Running the data pipeline...[/blue]")
-    
-    print("[gray]Setting up data source...[/gray]")
-    
-    print("[red]This is only a test...[/red]")    
+    data = source.extract()
+    print(f"[blue]Extracted Data:[/blue]\n{data.head()}")
     
 if __name__ == "__main__":
     app()
