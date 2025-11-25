@@ -20,6 +20,7 @@ typer = { version = ">=0.20.0,<0.21.0", extras = ["all"] }
 pydantic = ">=2.12.4,<3.0.0"
 rich = ">=14.2.0,<15.0.0"
 click = ">=8.1,<8.2"
+psycopg2-binary = "^2.9.11"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
