@@ -73,9 +73,18 @@ class PostgresSink(Sink):
         create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {self.table_name} (
             id SERIAL PRIMARY KEY,
-            time TIMESTAMP,
+            time TIMESTAMP NOT NULL,
+            lat FLOAT NOT NULL,
+            lon FLOAT NOT NULL,
             temp FLOAT,
-            humidity INTEGER
+            temp_f FLOAT,
+            temp_category VARCHAR(20),
+            humidity INTEGER,
+            hour INTEGER,
+            day_of_week INTEGER,
+            is_daytime INTEGER,
+            heat_index FLOAT,
+            UNIQUE (time, lat, lon) -- to avoid duplicate entries for the same timestamp and location (chave composta)
         );
         """
         cursor.execute(create_table_query)
@@ -83,22 +92,28 @@ class PostgresSink(Sink):
         if self.verbose:
             print(f"[green]Table '{self.table_name}' ensured to exist.[/green]")
             
-    def _insert_data(self, conn: str, cursor, data: pd.DataFrame) -> None:
+    def _insert_data(self, conn, cursor, data: pd.DataFrame) -> None:
         insert_query = f"""
-        INSERT INTO {self.table_name} (time, temp, humidity)
-        VALUES (%s, %s, %s);
+        INSERT INTO {self.table_name} (time, lat, lon, temp, humidity, temp_f, temp_category, hour, day_of_week, is_daytime, heat_index)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (time,lat,lon) DO UPDATE SET
+            temp = EXCLUDED.temp,
+            temp_f = EXCLUDED.temp_f,
+            temp_category = EXCLUDED.temp_category,
+            humidity = EXCLUDED.humidity,
+            hour = EXCLUDED.hour,
+            day_of_week = EXCLUDED.day_of_week,
+            is_daytime = EXCLUDED.is_daytime,
+            heat_index = EXCLUDED.heat_index;
         """
         
         tuples = [tuple(x) for x in data.to_numpy()]
-        
         cursor.executemany(insert_query, tuples)
-        
         conn.commit()
         
         if self.verbose:
-            print(f"[green]Inserted {len(tuples)} rows into '{self.table_name}'.[/green]")
-            
+            print(f"[green]Inserted/Updated {len(tuples)} rows into '{self.table_name}'.[/green]")
+        
         if self.debug:
-            print(f"[yellow] Lines inserted: {cursor.rowcount} [/yellow]")
-            
+            print(f"[yellow]Rows affected: {cursor.rowcount}[/yellow]")
         

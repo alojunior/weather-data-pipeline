@@ -39,6 +39,8 @@ class OpenMeteoSource(Source):
         
         df = pd.DataFrame({
             "time": data["hourly"]["time"],
+            "lat": self.latitude,
+            "lon": self.longitude,
             "temp": data["hourly"]["temperature_2m"],
             "humidity": data["hourly"]["relativehumidity_2m"],
         })

@@ -21,6 +21,10 @@ pydantic = ">=2.12.4,<3.0.0"
 rich = ">=14.2.0,<15.0.0"
 click = ">=8.1,<8.2"
 psycopg2-binary = "^2.9.11"
+matplotlib = "^3.10.8"
+seaborn = "^0.13.2"
+statsmodels = "^0.14.6"
+python-dotenv = "^1.2.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
